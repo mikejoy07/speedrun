@@ -34,11 +34,24 @@
       background-color: #aaa;
       cursor: default;
     }
+    input[type="text"] {
+      font-size: 20px;
+      padding: 10px;
+      margin: 10px;
+      width: 150px;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
   <h1>Đồng hồ bấm giờ</h1>
   <div id="time">00:00:00</div>
+
+  <div>
+    <input type="text" id="setTimeInput" placeholder="hh:mm:ss" />
+    <button id="setTimeBtn">Đặt giờ</button>
+  </div>
+
   <div>
     <button id="startBtn">Bắt đầu</button>
     <button id="pauseBtn" disabled>Tạm dừng</button>
@@ -48,7 +61,7 @@
   <script>
     let startTime = 0;
     let elapsed = 0;
-    let timerInterval;
+    let timerInterval = null;
     let running = false;
 
     function formatTime(ms) {
@@ -91,6 +104,27 @@
       running = false;
       document.getElementById('time').textContent = '00:00:00';
       document.getElementById('startBtn').textContent = 'Bắt đầu';
+      document.getElementById('pauseBtn').disabled = true;
+    });
+
+    document.getElementById('setTimeBtn').addEventListener('click', () => {
+      const input = document.getElementById('setTimeInput').value.trim();
+      const match = input.match(/^([0-9]{1,2}):([0-9]{1,2}):([0-9]{1,2})$/);
+      if (!match) {
+        alert('Vui lòng nhập đúng định dạng hh:mm:ss');
+        return;
+      }
+      const hours = parseInt(match[1], 10);
+      const minutes = parseInt(match[2], 10);
+      const seconds = parseInt(match[3], 10);
+      const totalMilliseconds = ((hours * 3600) + (minutes * 60) + seconds) * 1000;
+
+      clearInterval(timerInterval);
+      startTime = 0;
+      elapsed = totalMilliseconds;
+      running = false;
+      document.getElementById('time').textContent = formatTime(elapsed);
+      document.getElementById('startBtn').textContent = 'Tiếp tục';
       document.getElementById('pauseBtn').disabled = true;
     });
   </script>
